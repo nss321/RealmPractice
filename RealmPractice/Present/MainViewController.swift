@@ -16,17 +16,17 @@ class MainViewController: UIViewController {
     
     var list: Results<HouseholdLedger>!
     
-    let realm = try! Realm()
+    let repository = RealmTableRepository()
      
     override func viewDidLoad() {
         super.viewDidLoad()
         print(#function)
-        print(realm.configuration.fileURL)
+        print(repository.getFileURL())
         configureHierarchy()
         configureView()
         configureConstraints()
         
-        list = realm.objects(HouseholdLedger.self)
+        list = repository.fetchAll()
         
         // Results 타입이 아니라 Array 타입으로 사용하고 싶을때
 //        let data = realm.objects(HouseholdLedger.self)
@@ -97,21 +97,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         
         let data = list[indexPath.row]
-        
-        do {
-            try realm.write {
-//                realm.delete(data)
-                realm.create(HouseholdLedger.self,
-                             value: [
-                                "id": data.id,
-                                "money": 10000000000
-                             ],
-                             update: .modified)
-                tableView.reloadData()
-            }
-        } catch {
-            print("렐름 삭제")
-        }
+        repository.deleteItem(data: data) // realm write
+        tableView.reloadData()
+
     }
       
     

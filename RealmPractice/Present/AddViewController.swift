@@ -10,20 +10,18 @@ import UIKit
 import SnapKit
 import RealmSwift
 
-class AddViewController: UIViewController {
+final class AddViewController: UIViewController {
      
-    let moneyField = UITextField()
-    let categoryField = UITextField()
-    let memoField = UITextField()
-    let photoImageView = UIImageView()
-    let addButton = UIButton()
-    
-    let titleTextField = UITextField()
-    let contentTextField = UITextField()
-       
+    private let moneyField = UITextField()
+    private let categoryField = UITextField()
+    private let memoField = UITextField()
+    private let photoImageView = UIImageView()
+    private let addButton = UIButton()
+    private let titleTextField = UITextField()
+    private let contentTextField = UITextField()
     
     // realm
-    let realm = try! Realm()
+    private let repository = RealmTableRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,32 +43,12 @@ class AddViewController: UIViewController {
     
     @objc func addButtonClicked() {
         print(#function)
-        
     }
- 
     
     @objc func saveButtonClicked() {
         print(#function)
-        do {
-            try realm.write {
-                let data = HouseholdLedger(
-                    money: .random(in: 100...1000) * 100,
-                    category: "갤럭시S25-",
-                    content: "삼성",
-                    isIncome: true,
-                    memo: "커피",
-                    regDate: .now,
-                    isLiked: false
-                )
-                realm.add(data)
-                print("렐름 저장 완료")
-            }
-        } catch {
-            print("렐름에 저장 실패")
-        }
-        
+        repository.createItem()
         navigationController?.popViewController(animated: true)
-        
     }
     
     private func configureView() {
