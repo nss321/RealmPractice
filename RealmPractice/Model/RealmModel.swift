@@ -35,6 +35,9 @@ final class HouseholdLedger: Object {
     @Persisted var regDate: Date
     @Persisted var isLiked: Bool
     
+    @Persisted(originProperty: "detail")
+    var folder: LinkingObjects<Folder>
+    
     convenience init(money: Int, category: String, content: String, isIncome: Bool, memo: String?, regDate: Date, isLiked: Bool) {
         self.init()
         self.money = money
@@ -44,14 +47,5 @@ final class HouseholdLedger: Object {
         self.memo = memo
         self.regDate = regDate
         self.isLiked = isLiked
-    }
-}
-
-final class Folder: Object {
-    @Persisted var name: String
-    
-    convenience init(name: String) {
-        self.init()
-        self.name = name
     }
 }

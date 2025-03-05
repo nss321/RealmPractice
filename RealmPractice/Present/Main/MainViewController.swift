@@ -10,16 +10,22 @@ import UIKit
 import SnapKit
 import RealmSwift
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
 
-    let tableView = UITableView()
+    private let tableView = UITableView()
     
     var list: Results<HouseholdLedger>!
     
-    let repository = RealmTableRepository()
-     
+    private let repository: RealmRepository = RealmTableRepository()
+    private let folderRepository: FolderRepository = FolderTableRepository()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+//        folderRepository.createItem(name: "션")
+//        folderRepository.createItem(name: "립우")
+//        folderRepository.createItem(name: "맹고")
+//        folderRepository.createItem(name: "먀")
+        
         print(#function)
         print(repository.getFileURL())
         configureHierarchy()
@@ -27,6 +33,7 @@ class MainViewController: UIViewController {
         configureConstraints()
         
         list = repository.fetchAll()
+        print(list)
         
         // Results 타입이 아니라 Array 타입으로 사용하고 싶을때
 //        let data = realm.objects(HouseholdLedger.self)
@@ -86,15 +93,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: ListTableViewCell.id) as! ListTableViewCell
         
         let data = list[indexPath.row]
-        cell.titleLabel.text = data.content
-        cell.subTitleLabel.text = data.memo
+        cell.titleLabel.text = "\(data.content), \(data.category)"
+        cell.subTitleLabel.text = "\(data.folder)"
         cell.overviewLabel.text = "\(data.money)"
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         
         let data = list[indexPath.row]
         repository.deleteItem(data: data) // realm write

@@ -21,7 +21,9 @@ final class AddViewController: UIViewController {
     private let contentTextField = UITextField()
     
     // realm
-    private let repository = RealmTableRepository()
+    var id: ObjectId?
+    private let repository: RealmRepository = RealmTableRepository()
+    private let folderRepository: FolderRepository = FolderTableRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +49,12 @@ final class AddViewController: UIViewController {
     
     @objc func saveButtonClicked() {
         print(#function)
-        repository.createItem()
+        // 최대한 은닉하고싶다.
+        let folder = folderRepository.fetchAll().where {
+            $0.id == id!
+        }.first!
+        
+        repository.createItemInFolder(folder: folder)
         navigationController?.popViewController(animated: true)
     }
     
