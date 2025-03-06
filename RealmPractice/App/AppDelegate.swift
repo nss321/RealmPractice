@@ -7,12 +7,70 @@
 
 import UIKit
 
+import RealmSwift
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
  
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // 현재 사용자가 쓰고 있는 DB Schema Version
+        migration()
+        let realm = try! Realm()
+        do {
+            let version = try schemaVersionAtURL(realm.configuration.fileURL!)
+            print("Schema Version, ", version)
+        } catch {
+            print("Schema Failed")
+        }
+        
+        
         return true
+    }
+    
+    func migration() {
+        let config = Realm.Configuration(schemaVersion: 6) { migration, oldSchemaVersion in
+            // 0 -> 1: like 삭제
+            if oldSchemaVersion < 1 {
+                
+            }
+            
+            // 1 -> 2: Folder에 like 추가
+            if oldSchemaVersion < 2 {
+                
+            }
+            
+            // 2 -> 3: like2 추가
+            if oldSchemaVersion < 3 {
+                migration.enumerateObjects(ofType: HouseholdLedger.className()) { oldObject, newObject in
+                    guard let newObject = newObject else {
+                        return
+                    }
+                    newObject["like2"] = true
+                }
+            }
+            
+            // 3 -> 4: Folder like를 favorite으로 변경
+            if oldSchemaVersion < 4 {
+                migration.renameProperty(onType: HouseholdLedger.className(), from: "like", to: "favorite")
+            }
+
+            // 4 -> 5: Folder nameDescription 추가
+            if oldSchemaVersion < 5 {
+                migration.enumerateObjects(ofType: Folder.className()) { oldObject, newObject in
+                    guard let oldObejct = oldObject else { return }
+                    guard let newObject = newObject else { return }
+                    newObject["nameDescription"] = "\(oldObejct["name"] ?? "") 폴더에 대해서 설명해주세요."
+                }
+            }
+            
+            // 5 -> 6: Folder EmbeddeddObject 추가
+            if oldSchemaVersion < 6 {
+            }
+            
+        }
+        Realm.Configuration.defaultConfiguration = config
     }
 
     // MARK: UISceneSession Lifecycle
