@@ -7,12 +7,14 @@
 
 import UIKit
 
+import FSCalendar
 import SnapKit
 import RealmSwift
 
 final class MainViewController: UIViewController {
 
     private let tableView = UITableView()
+    let calendar = FSCalendar()
     
     var list: Results<HouseholdLedger>!
     
@@ -54,9 +56,14 @@ final class MainViewController: UIViewController {
     
     private func configureHierarchy() {
         view.addSubview(tableView)
+        view.addSubview(calendar)
     }
     
     private func configureView() {
+        calendar.backgroundColor = .systemGreen
+        calendar.delegate = self
+        calendar.dataSource = self
+        
         view.backgroundColor = .white
         tableView.rowHeight = 130
         tableView.delegate = self
@@ -69,9 +76,13 @@ final class MainViewController: UIViewController {
     }
     
     private func configureConstraints() {
-         
-        tableView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+        calendar.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            $0.height.equalTo(250)
+        }
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(calendar.snp.bottom)
+            $0.horizontalEdges.bottom.equalToSuperview()
         }
     }
      
@@ -107,6 +118,49 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.reloadData()
 
     }
-      
+}
+
+extension MainViewController: FSCalendarDataSource, FSCalendarDelegate {
+//    func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
+//        print(date)
+//        return 2
+//    }
+//    
+//    func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
+//        
+//    }
+//    
+//    func calendar(_ calendar: FSCalendar, imageFor date: Date) -> UIImage? {
+//        UIImage(systemName: "heart")
+//    }
+//    
+//    func calendar(_ calendar: FSCalendar, titleFor date: Date) -> String? {
+//        "따이뜰"
+//    }
+//    
+//    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
+//        "싸부따이뜰"
+//    }
     
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        print(#function, date)
+        
+        // 선택한 날짜
+        let start = Calendar.current.startOfDay(for: date)
+        
+        // 선택한 날짜의 다음날 날짜
+        let end: Date = Calendar.current.date(byAdding: .day, value: 1, to: start) ?? Date()
+        
+        let name = "식비"
+        // Realm where filter, iOS NSPredicate
+        let predicate = NSPredicate(format: "regDate >= %@ && regDate < %@",
+                                    start as NSDate, end as NSDate)
+        
+        let realm = try! Realm()
+        
+        let result = realm.objects(HouseholdLedger.self).filter(predicate)
+        
+        dump(result)
+//        start <= date < end
+    }
 }

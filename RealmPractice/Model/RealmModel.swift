@@ -9,15 +9,6 @@ import Foundation
 import RealmSwift
 
 final class HouseholdLedger: Object {
-//    연번
-//    일시
-//    사용처
-//    분류
-//    금액
-//    항목명
-//    수입/지출
-//    비고
-    
     /*
      1. 금액
      2. 카테고리

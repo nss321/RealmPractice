@@ -68,6 +68,7 @@ class ListTableViewCell: UITableViewCell {
     
     private func configureView() {
         thumbnailImageView.contentMode = .scaleAspectFill
+        thumbnailImageView.clipsToBounds = true
         overviewLabel.numberOfLines = 0
         overviewLabel.font = .systemFont(ofSize: 13)
     }

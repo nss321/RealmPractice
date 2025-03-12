@@ -21,6 +21,14 @@ final class FolderViewController: UIViewController {
         configureConstraints()
         list = repository.fetchAll()
         dump(list)
+        
+//        navigationItem.title = NSLocalizedString("navigation_title", comment: "타이틀에 드러가는 거애오")
+        let title = NSLocalizedString("navigation_title_nickname", comment: "")
+        let titleFormat = String(format: title, "Sean")
+        navigationItem.title = titleFormat
+        
+        // 저는 고래밥입니다.
+        // my nickname is 고래밥
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,6 +50,11 @@ final class FolderViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: nil, image: UIImage(systemName: "star.fill"), target: self, action: #selector(rightBarButtonItemClicked))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "백업", primaryAction: UIAction(handler: { [weak self] _ in
+                self?.navigationController?.pushViewController(BackUpViewController(), animated: true)
+            }))
+        
     }
     
     @objc func rightBarButtonItemClicked() {
@@ -71,14 +84,14 @@ extension FolderViewController: UITableViewDelegate, UITableViewDataSource {
         let data = list[indexPath.row]
         cell.titleLabel.text = data.name
         cell.subTitleLabel.text = "\(data.detail.count)개"
-        
+        cell.overviewLabel.text = "cell_age".localized(number: 12)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let data = list[indexPath.row]
-        repository.createMemo(data: data)
-        tableView.reloadData()
+//        let data = list[indexPath.row]
+//        repository.createMemo(data: data)
+//        tableView.reloadData()
         
         // 폴더 삭제
         // 폴더 지울 때 세부 항목도 지울 것인지?
@@ -89,11 +102,11 @@ extension FolderViewController: UITableViewDelegate, UITableViewDataSource {
         
         
         // 화면 전환
-//        let data = list[indexPath.row]
-//        let vc = FolderDetailViewController()
-//        vc.list = data.detail
-//        vc.id = data.id
-//        self.navigationController?.pushViewController(vc, animated: true)
+        let data = list[indexPath.row]
+        let vc = FolderDetailViewController()
+        vc.list = data.detail
+        vc.id = data.id
+        self.navigationController?.pushViewController(vc, animated: true)
     }
       
 }

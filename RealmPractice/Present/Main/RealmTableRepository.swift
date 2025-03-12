@@ -14,7 +14,7 @@ protocol RealmRepository {
     func createItem()
     func deleteItem(data: HouseholdLedger)
     func updateItem(data: HouseholdLedger)
-    func createItemInFolder(folder: Folder)
+    func createItemInFolder(folder: Folder, data: HouseholdLedger)
 }
 
 final class RealmTableRepository: RealmRepository {
@@ -52,7 +52,7 @@ final class RealmTableRepository: RealmRepository {
         }
     }
     
-    func createItemInFolder(folder: Folder) { // Folder  테이블과 상관없이 Realm에 레코드 바로추가
+    func createItemInFolder(folder: Folder, data: HouseholdLedger) { // Folder  테이블과 상관없이 Realm에 레코드 바로추가
         do {
             try realm.write {
                 // 어떤 폴더에 넣어줄 지
@@ -60,15 +60,6 @@ final class RealmTableRepository: RealmRepository {
 //                    $0.name == "션"
 //                }.first!
     
-                let data = HouseholdLedger(
-                    money: .random(in: 1...1000) * 1000,
-                    category: ["카페", "생활비", "식비", "잡비"].randomElement()!,
-                    content: ["점심", "커피", "칫솔", "주유"].randomElement()!,
-                    isIncome: true,
-                    memo: "커피",
-                    regDate: .now,
-                    isLiked: false
-                )
                 folder.detail.append(data)
                 realm.add(data)
                 print("렐름 저장 완료", data)
